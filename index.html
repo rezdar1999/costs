@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ريزدار لحساب تكلفة المشاريع والمنتجات</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 0 15px;
+            box-sizing: border-box;
+            direction: rtl;
+        }
+
+        .calculator-container {
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            border: 3px solid #8e44ad;
+        }
+
+        .calculator-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            text-align: center;
+            color: #8e44ad;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1 1 calc(50% - 15px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            box-sizing: border-box;
+            background: #fefefe;
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #8e44ad;
+            background: #f9f9ff;
+            outline: none;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #8e44ad, #3498db);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(142, 68, 173, 0.5);
+        }
+
+        .button:hover {
+            background: linear-gradient(90deg, #3498db, #8e44ad);
+            box-shadow: 0 6px 15px rgba(142, 68, 173, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #8e44ad;
+            background: #f9f9ff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator-title">ريزدار لحساب تكلفة المشاريع والمنتجات</div>
+        <form id="costCalculator">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="directMaterial">تكلفة المواد المباشرة (بالدولار):</label>
+                    <input type="number" id="directMaterial" placeholder="أدخل التكلفة" required>
+                </div>
+                <div class="form-group">
+                    <label for="directLabor">تكلفة العمالة المباشرة (بالدولار):</label>
+                    <input type="number" id="directLabor" placeholder="أدخل التكلفة" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="units">عدد الوحدات المنتجة:</label>
+                    <input type="number" id="units" placeholder="أدخل العدد" required>
+                </div>
+                <div class="form-group">
+                    <label for="indirectCosts">التكاليف غير المباشرة (بالدولار):</label>
+                    <input type="number" id="indirectCosts" placeholder="أدخل التكلفة" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="profitMargin">هامش الربح المطلوب (%):</label>
+                    <input type="number" id="profitMargin" placeholder="أدخل النسبة" required>
+                </div>
+            </div>
+
+            <button type="button" class="button" onclick="calculateCost()">احسب التكلفة</button>
+        </form>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateCost() {
+            const directMaterial = parseFloat(document.getElementById('directMaterial').value);
+            const directLabor = parseFloat(document.getElementById('directLabor').value);
+            const units = parseInt(document.getElementById('units').value, 10);
+            const indirectCosts = parseFloat(document.getElementById('indirectCosts').value);
+            const profitMargin = parseFloat(document.getElementById('profitMargin').value);
+
+            if (
+                isNaN(directMaterial) ||
+                isNaN(directLabor) ||
+                isNaN(units) ||
+                isNaN(indirectCosts) ||
+                isNaN(profitMargin) ||
+                units <= 0 ||
+                profitMargin < 0
+            ) {
+                document.getElementById('result').textContent = 'يرجى إدخال قيم صحيحة.';
+                return;
+            }
+
+            const totalCost = directMaterial + directLabor + indirectCosts;
+            const unitCost = totalCost / units;
+            const profitPerUnit = unitCost * (profitMargin / 100);
+            const sellingPrice = unitCost + profitPerUnit;
+
+            document.getElementById('result').textContent = `
+                التكلفة الإجمالية: $${totalCost.toFixed(2)} | تكلفة الوحدة: $${unitCost.toFixed(2)} | سعر البيع لكل وحدة: $${sellingPrice.toFixed(2)}
+            `;
+        }
+    </script>
+</body>
+</html>
